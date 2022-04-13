@@ -8,12 +8,12 @@ from messages import TextMsg, SayText2
 from filters.players import PlayerIter
 from filters.entities import EntityIter
 from memory import Convention, DataType
-from commands.client import ClientCommand
 from colors import GREEN, LIGHT_GREEN, RED
 from filters.weapons import WeaponClassIter
+from entities.helpers import index_from_pointer
 from engines.server import queue_command_string
 from listeners import OnLevelInit, OnLevelShutdown
-
+from entities.hooks import EntityCondition, EntityPreHook
 warm_up = False
 
 #=========================================
@@ -96,12 +96,12 @@ def remove_idle_weapons():
 				weapon.remove() # Remove the idle weapon
 
 #=========================================
-# Events & Listerners & ClientCommand
+# Events & Listerners & Hook
 #=========================================
-@ClientCommand('buy')
-def buy_command(command, index):
-	'''Called when a player buy weapon.'''
-	weapon = command[1].lower() # Get the weapon name, player attemps to buy
+@EntityPreHook(EntityCondition.is_player, 'buy_internal')
+def pre_buy(args):
+	''' Called before player purchases weapon '''
+	weapon = args[1] # Get the weapon name, player attemps to buy
 	global warm_up
 	if warm_up: # Is currently warm up
 		WarmupPlayer(index).tell_weapon(weapon.title()) # Tell the message can't buy weapons
