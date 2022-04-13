@@ -101,10 +101,11 @@ def remove_idle_weapons():
 @EntityPreHook(EntityCondition.is_player, 'buy_internal')
 def pre_buy(args):
 	''' Called before player purchases weapon '''
+	player = WarmupPlayer(index_from_pointer(args[0]))
 	weapon = args[1] # Get the weapon name, player attemps to buy
 	global warm_up
 	if warm_up: # Is currently warm up
-		WarmupPlayer(index).tell_weapon(weapon.title()) # Tell the message can't buy weapons
+		player.tell_weapon(weapon.title()) # Tell the message can't buy weapons
 		return False # Block weapon purchase
 
 @Event('player_spawn')
